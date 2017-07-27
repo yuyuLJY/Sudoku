@@ -1,0 +1,432 @@
+package edu.hit1160300225;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class Sudoku extends JFrame {
+	static JTextField text[][]=new JTextField[10][10];//文本框
+	private JPanel contentPane;
+	static int[][] maps = new int[9][9];
+    //每个小九宫格可放置位置的数
+    static int[] canPutSum = new int[9];
+    //用来存储之前放置过的位置
+    static int[] used = new int[9];
+    //是否已经完成地图的生成
+    static boolean isOk = true;
+    static int data[][]=new int[9][9];//承接格子里边信息的数组
+    static int use[][]=new int[9][9];//用于产生不同难度的数独小组
+    static int atext[][]=new int[9][9];//承接答案信息的数组
+
+	/**
+	 * Launch the application. 
+	 */
+	public static void main(String[] args) {
+		getMap();//生成数独数组
+		//int[][] data = getMap();//生成数独数组
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Sudoku frame = new Sudoku();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Sudoku() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(300, 300, 450, 450);//设置边距
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		JPanel gamepanel = new JPanel();
+		contentPane.add(gamepanel, BorderLayout.SOUTH);
+		gamepanel.setLayout(new GridLayout(9, 9, 1, 1));
+		this.setResizable(false);  
+		for(int i =0;i<9;i++) {
+			for (int j=0;j<9;j++) {
+			   text[i][j] =  new JTextField(); 
+			   gamepanel.add(text[i][j]);//把文本框填进游戏panel
+			}
+		} 
+		contentPane.add(gamepanel);
+		
+		for(int i =0;i<9;i++) {
+			for (int j=0;j<9;j++) {
+			   use[i][j]=-1;//全部标记未用过
+			}
+		} 
+	//	int[][] data = getMap();//生成数独数组
+		//只有六十个数字可以看到
+		int counter = 0;
+		do {
+			counter++; 
+			int ii =(int)(Math.random()*9);//创建0-8之间的随机数
+			int jj =(int)(Math.random()*9);//创建0-8之间的随机数
+			if(use[ii][jj]==-1) {
+				   text[ii][jj].setText((Integer.toString(maps[ii][jj])));  //int与String之间的转换
+				   text[ii][jj].setHorizontalAlignment(JTextField.CENTER);  
+				   text[ii][jj].setEditable(false);  //填上去
+			       use[ii][jj]=1;
+		    }else {
+		    	counter=counter-1;
+		    }
+		}while(counter<71);//低等难度可以看不到10个数字
+		contentPane.add(gamepanel);//把gamepanel页面添加上去
+		JMenuBar menuBar = new JMenuBar();
+		contentPane.add(menuBar, BorderLayout.NORTH);
+		
+		JMenu mnNewMenu = new JMenu("dificuty");
+		menuBar.add(mnNewMenu);
+		
+		JMenuItem mntmNewMenuItem = new JMenuItem("middle");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getMap();
+				for(int i =0;i<9;i++) {
+					for (int j=0;j<9;j++) {
+					   text[i][j].setText(""); //把所有的文本都清空
+					   text[i][j].setEditable(true);  //填上去
+					}
+				} 
+				int counter = 0;
+				for(int i =0;i<9;i++) {
+					for (int j=0;j<9;j++) {
+					   use[i][j]=-1;//全部标记未用过
+					}
+				} 
+			//	int[][] data = getMap();//生成数独数组
+				//只有六十个数字可以看到
+				do {
+					counter++;
+					int ii =(int)(Math.random()*9);//创建0-8之间的随机数
+					int jj =(int)(Math.random()*9);//创建0-8之间的随机数
+					if(use[ii][jj]==-1) {
+						   text[ii][jj].setText((Integer.toString(maps[ii][jj])));  //int与String之间的转换
+						   text[ii][jj].setHorizontalAlignment(JTextField.CENTER);  
+						   text[ii][jj].setEditable(false);  //填上去
+					       use[ii][jj]=1;
+				    }else {
+				    	counter--;
+				    }
+				}while(counter<=61);//难度中等看不到20个数字
+				contentPane.add(gamepanel);//把gamepanel页面添加上去
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem);
+		
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("small");
+		mntmNewMenuItem_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getMap();
+				for(int i =0;i<9;i++) {
+					for (int j=0;j<9;j++) {
+					   text[i][j].setText(""); //把所有的文本都清空
+					   text[i][j].setEditable(true);  //填上去
+					}
+				} 
+				int counter = 0;
+				for(int i =0;i<9;i++) {
+					for (int j=0;j<9;j++) {
+					   use[i][j]=-1;//全部标记未用过
+					}
+				} 
+			//	int[][] data = getMap();//生成数独数组
+				//只有六十个数字可以看到
+				do {
+					counter++;
+					int ii =(int)(Math.random()*9);//创建0-8之间的随机数
+					int jj =(int)(Math.random()*9);//创建0-8之间的随机数
+					if(use[ii][jj]==-1) {
+						   text[ii][jj].setText((Integer.toString(maps[ii][jj])));  //int与String之间的转换
+						   text[ii][jj].setHorizontalAlignment(JTextField.CENTER);  
+						   text[ii][jj].setEditable(false);  //填上去
+					       use[ii][jj]=1;
+				    }else {
+				    	counter--;
+				    }
+				}while(counter<=71);//难度很小，只有十个看不到
+				contentPane.add(gamepanel);//把gamepanel页面添加上去
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem_1);
+		
+		//困难程度大的数独
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("big");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getMap();
+				for(int i =0;i<9;i++) {
+					for (int j=0;j<9;j++) {
+					   text[i][j].setText(""); //把所有的文本都清空
+					   text[i][j].setEditable(true);  //填上去
+					}
+				} 
+				int counter = 0;
+				for(int i =0;i<9;i++) {
+					for (int j=0;j<9;j++) {
+					   use[i][j]=-1;//全部标记未用过
+					}
+				} 
+			//	int[][] data = getMap();//生成数独数组
+				//只有六十个数字可以看到
+				do {
+					counter++;
+					int ii =(int)(Math.random()*9);//创建0-8之间的随机数
+					int jj =(int)(Math.random()*9);//创建0-8之间的随机数
+					if(use[ii][jj]==-1) {
+						   text[ii][jj].setText((Integer.toString(maps[ii][jj])));  //int与String之间的转换
+						   text[ii][jj].setHorizontalAlignment(JTextField.CENTER);  
+						   text[ii][jj].setEditable(false);  //填上去
+					       use[ii][jj]=1;
+				    }else {
+				    	counter--;
+				    }
+				}while(counter<=41);//难度大，40个信息看不到
+				contentPane.add(gamepanel);//把gamepanel页面添加上去
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem_2);
+		
+		JMenu mnNewMenu_1 = new JMenu("send");
+		menuBar.add(mnNewMenu_1);
+		
+		//提交成绩
+		JMenuItem mntmNewMenuItem_3 = new JMenuItem("send my work");
+		mntmNewMenuItem_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//JOptionPane.showMessageDialog(null,"我被执行了","Alert",JOptionPane.ERROR_MESSAGE);
+				boolean b =gettext_();
+				boolean a = checkAnswer(atext);
+				if(a && b) {
+					JOptionPane.showMessageDialog(null,"successful!","Alert",JOptionPane.ERROR_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null,"wrong!","Alert",JOptionPane.ERROR_MESSAGE);
+				}
+		}
+		});
+		mnNewMenu_1.add(mntmNewMenuItem_3);
+		
+		JMenu mnNewMenu_2 = new JMenu("answer");
+		menuBar.add(mnNewMenu_2);
+		
+		JMenuItem mntmNewMenuItem_4 = new JMenuItem("show answer");
+		mntmNewMenuItem_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new show();  //重新打开一个答案页
+			}
+		});
+		mnNewMenu_2.add(mntmNewMenuItem_4);
+		
+		
+		
+	}
+	public static int[][] getMap() {
+	        do{
+	            isOk = true;
+	            initMaps();
+	        }while(!isOk);
+	        return maps;
+	    }
+	public static void initMaps(){
+		 for (int i = 0; i < 9; i++) {
+	            for (int j = 0; j < 9; j++) {
+	                maps[i][j] = -1;
+	            }
+	        }
+
+	        // 依次填入1~9
+	        for (int num = 1; num <= 9; num++) {
+	            for (int i = 0; i < 9; i++) {
+	                used[i] = -1;
+	                canPutSum[i] = -1;
+	            }
+	            // 遍历大九宫格中的每个小九宫格
+	            for (int i = 0; i < 9; i++) {
+	                if (canPutSum[i]==-1) {
+	                    canPutSum[i] = getCanPutSum(i, num);
+	                }
+	                if (canPutSum[i]==1) {
+	                    used[i] = -1;
+	                }
+
+	                if (canPutSum[i] == 0) {
+	                    canPutSum[i] = -1;
+	                    used[i] = -1;
+	                    // 如果当前小九宫格中不能放入数字num，则回到前一个小九宫格
+	                    if (i > 0) {
+	                        // 将前一个九宫格中放num的位置清空
+	                        if (used[i-1]!=-1) {
+	                            //maps[(int) (Math.floor(used[i-1]/3)+Math.floor((i-1)/3)*3)][used[i-1]%3+((i-1)%3)*3]=-1;
+	                            clearNum(i - 1, num);
+	                        }
+	                        // i回退一个，因为等会for循环灰给i加一，所以这里减2
+	                        i -= 2;
+	                        continue;
+	                    } else {
+	                        isOk = false;
+	                        return ;
+	                    }
+	                } else {
+	                    // 将num放入当前小九宫格中
+	                    boolean flag = false;
+	                    while (!flag) {
+	                        int j = (int) (Math.random() * 9);
+	                        // 当前小方格横坐标
+	                        int ii = (i / 3) * 3 + j / 3;
+	                        // 当前小方格纵坐标
+	                        int jj = (i % 3) * 3 + j % 3;
+	                        //System.out.println("num:"+num+"\tii:"+ii+"\tjj:"+jj);
+	                        // 如果可以放置num则放置
+	                        if (maps[ii][jj] == -1 && j!=used[i] && isCanPut(ii, jj, num)) {
+	                            maps[ii][jj] = num;
+	                            used[i] = j;
+	                            canPutSum[i] -= 1;
+	                            flag = true;
+	                        }
+
+	                    }
+	                }
+
+	            }
+	        }
+	}
+
+    /*
+     * 清空第i个小九宫格中的num
+     */
+    private static void clearNum(int i, int num) {
+        for (int j = 0; j < 9; j++) {
+            // 当前小方格横坐标
+            int ii = (i / 3) * 3 + j / 3;
+            // 当前小方格纵坐标
+            int jj = (i % 3) * 3 + j % 3;
+            // 判断当前小方格是否可以放置
+            if (maps[ii][jj] == num) {
+                maps[ii][jj] = -1;
+            }
+        }
+
+    }
+
+    /*
+     * 得到当前小九宫格可以放入数字num的位置数目
+     */
+    private static int getCanPutSum(int i, int num) {
+        int sum = 0;
+        // 遍历小九宫格
+        for (int j = 0; j < 9; j++) {
+            // 当前小方格横坐标
+            int ii = (i / 3) * 3 + j / 3;
+            // 当前小方格纵坐标
+            int jj = i % 3 * 3 + j % 3;
+            // 判断当前小方格是否可以放置
+            if (maps[ii][jj] == -1 && isCanPut(ii, jj, num)) {
+                ++sum;
+            }
+        }
+
+        return sum;
+
+    }
+
+    /*
+     * 指定横纵坐标点是否可以放置num
+     */
+    private static boolean isCanPut(int ii, int jj, int num) {
+        // 判断指定坐标点的同行或同列是否有相同数字，要是有则为false
+        for (int i = 0; i < 9; i++) {
+            if (maps[ii][i] == num) {
+                return false;
+            }
+            if (maps[i][jj] == num) {
+                return false;
+            }
+        }
+        return true;
+    }
+ 
+    //判断输入是否符合标准
+    public boolean  gettext_() {
+    for(int i =0;i<9;i++) {
+		for(int j=0;j<9;j++) {
+			 try  
+			    {  
+			    atext[i][j]= Integer.parseInt(text[i][j].getText());//atext存储int类型的信息，把固定和写进去的都读出来
+			    }  
+			    catch(NumberFormatException h)  
+			    {  
+			    	JOptionPane.showMessageDialog(null,"输入了不合法的数字或者未完成游戏!","Alert",JOptionPane.ERROR_MESSAGE);
+			    	return false;
+			    }  
+		}
+		}
+    return true;
+    }
+    
+    //判断答案是否正确
+    public boolean checkAnswer(int[][] atext) {
+    	for(int i =0;i<9;i++) {
+			for(int j=0;j<9;j++) {
+				if(atext[i][j]!=maps[i][j]) {
+					return false;
+				}
+			}
+		}
+    	return true;
+    }
+    
+    class show extends JFrame  
+	 {  
+	 private JTextField answer[][]=new JTextField[10][10];//不同的文本框  
+	  public show()  
+	   {	
+		  super("answer");  
+		  setBounds(300, 300, 300,300);//设置边距;  
+		    this.setVisible(true);  //
+		    this.setResizable(false);  
+		    JPanel apanel_new=new JPanel(new GridLayout(9,9,2,2));  //格雷布局的九个格子
+		    //JPanel apanel[]=new JPanel[10];  //每个格子是一个画布
+		    //数字1-9
+		    for(int i =0;i<9;i++) {
+				for (int j=0;j<9;j++) {
+				   answer[i][j] =  new JTextField(); 
+				   apanel_new.add(answer[i][j]);//把文本框填进游戏panel
+				}
+			} 
+		    for(int i=0;i<9;i++)  
+		    {
+		     for(int j=0;j<9;j++)  
+		     {  
+		    	 answer[i][j].setText((Integer.toString(maps[i][j])));  //int与String之间的转换
+		    	 answer[i][j].setHorizontalAlignment(JTextField.CENTER);  
+		    	 answer[i][j].setEditable(false);  //填上去
+				// apanel_txt.add(atext[i][j]);  有了就见不到了
+		       //text[j][k].setText(Integer.toString(j)+Integer.toString(k));   
+		     }  
+		    }  
+		    this.add(apanel_new);  
+	   }
+	   }   
+}
